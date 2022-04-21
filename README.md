@@ -1,4 +1,5 @@
 # multimodal_routeplanner
+a multimodal fullcost-based route planner for urban mobility
 
 A new Flutter project.
 
