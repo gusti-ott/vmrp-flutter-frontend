@@ -3,50 +3,69 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  static final Color _lightPrimaryColor = Colors.blueGrey.shade50;
-  static final Color _lightPrimaryVariantColor = Colors.blueGrey.shade800;
-  static final Color _lightOnPrimaryColor = Colors.blueGrey.shade200;
-  static const Color _lightTextColorPrimary = Colors.black;
-  static const Color _appbarColorLight = Colors.blue;
+  static final Color _lightPrimaryColor = Color(0xFF485696);
+  static final Color _lightOnPrimaryColor = Color(0xFFFE7E7E7);
+  static const Color _lightTextColorPrimary = Color(0xFFFE7E7E7);
 
-  static final Color _darkPrimaryColor = Colors.blueGrey.shade900;
-  static const Color _darkPrimaryVariantColor = Colors.black;
-  static final Color _darkOnPrimaryColor = Colors.blueGrey.shade300;
-  static const Color _darkTextColorPrimary = Colors.white;
-  static final Color _appbarColorDark = Colors.blueGrey.shade800;
+  static final Color _lightSecondaryColor = Color(0xFFF9C784);
+  //static final Color _lightSecondaryColor = Color(0xFFFC7A1E);
+  static final Color _lightOnSecondaryColor = Color.fromARGB(255, 17, 17, 17);
+  static const Color _lightTextColorSecondary = Color.fromARGB(255, 10, 10, 10);
 
-  static const Color _iconColor = Colors.white;
+  static final Color _darkPrimaryColor = Color(0xFF485696);
+  static final Color _darkOnPrimaryColor = Color(0xFFFE7E7E7);
+  static const Color _darkTextColorPrimary = Color(0xFFFE7E7E7);
 
-  static const Color _accentColorDark = Color.fromRGBO(74, 217, 217, 1);
+  static final Color _darkSecondaryColor = Color(0xFFF9C784);
+  //static final Color _lightSecondaryColor = Color(0xFFFC7A1E);
+  static final Color _darkOnSecondaryColor = Color.fromARGB(255, 17, 17, 17);
+  static const Color _darkTextColorSecondary = Color.fromARGB(255, 10, 10, 10);
+
+  static const Color _appbarColorLight = Color(0xFF707BAB);
+  static const Color _appbarColorDark = Color.fromARGB(255, 10, 10, 10);
+
+  static const Color _bottomNavigationBarIconColorSelected = Color(0xFFF9C784);
+  static const Color _bottomNavigationBarIconColorUnselected =
+      Color(0xFFE7E7E7);
+
+  static const Color _iconColor = Colors.blueGrey;
+  static const Color _iconColorDark = Colors.blueGrey;
 
   static const TextStyle _lightHeadingText = TextStyle(
       color: _lightTextColorPrimary,
       fontFamily: "Rubik",
-      fontSize: 20,
-      fontWeight: FontWeight.bold);
+      fontStyle: FontStyle.normal,
+      fontSize: 18);
 
   static const TextStyle _lightBodyText = TextStyle(
       color: _lightTextColorPrimary,
       fontFamily: "Rubik",
       fontStyle: FontStyle.italic,
-      fontWeight: FontWeight.bold,
+      fontSize: 14);
+
+  static const TextStyle _lightInputText = TextStyle(
+      color: _lightTextColorSecondary,
+      fontFamily: "Rubik",
+      fontStyle: FontStyle.normal,
+      fontSize: 18);
+
+  static const TextStyle _lightBodyTextButton = TextStyle(
+      color: _lightTextColorSecondary,
+      fontFamily: "Rubik",
+      fontStyle: FontStyle.normal,
       fontSize: 16);
 
   static const TextTheme _lightTextTheme = TextTheme(
-    headline1: _lightHeadingText,
-    bodyText1: _lightBodyText,
-  );
+      headline1: _lightHeadingText,
+      bodyText1: _lightBodyText,
+      bodyText2: _lightInputText,
+      button: _lightBodyTextButton);
 
-  static final TextStyle _darkThemeHeadingTextStyle =
-      _lightHeadingText.copyWith(color: _darkTextColorPrimary);
-
-  static final TextStyle _darkThemeBodyeTextStyle =
-      _lightBodyText.copyWith(color: _darkTextColorPrimary);
-
-  static final TextTheme _darkTextTheme = TextTheme(
-    headline1: _darkThemeHeadingTextStyle,
-    bodyText1: _darkThemeBodyeTextStyle,
-  );
+  static const TextTheme _darkTextTheme = TextTheme(
+      headline1: _lightHeadingText,
+      bodyText1: _lightBodyText,
+      bodyText2: _lightInputText,
+      button: _lightBodyTextButton);
 
   static final ThemeData lightTheme = ThemeData(
       scaffoldBackgroundColor: _lightPrimaryColor,
@@ -54,24 +73,31 @@ class AppTheme {
           color: _appbarColorLight,
           iconTheme: IconThemeData(color: _iconColor)),
       bottomAppBarColor: _appbarColorLight,
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: _appbarColorLight,
+          selectedItemColor: _bottomNavigationBarIconColorSelected,
+          unselectedItemColor: _bottomNavigationBarIconColorUnselected),
       colorScheme: ColorScheme.light(
           primary: _lightPrimaryColor,
           onPrimary: _lightOnPrimaryColor,
-          secondary: _accentColorDark,
-          primaryContainer: _lightPrimaryVariantColor),
+          secondary: _lightSecondaryColor,
+          onSecondary: _lightOnSecondaryColor),
       textTheme: _lightTextTheme);
 
   static final ThemeData darkTheme = ThemeData(
-      scaffoldBackgroundColor: _darkPrimaryColor,
-      appBarTheme: AppBarTheme(
+      scaffoldBackgroundColor: _lightPrimaryColor,
+      appBarTheme: const AppBarTheme(
           color: _appbarColorDark,
-          iconTheme: const IconThemeData(color: _iconColor)),
+          iconTheme: IconThemeData(color: _iconColorDark)),
       bottomAppBarColor: _appbarColorDark,
-      colorScheme: ColorScheme.dark(
-        primary: _darkPrimaryColor,
-        secondary: _accentColorDark,
-        onPrimary: _darkOnPrimaryColor,
-        primaryContainer: _darkPrimaryVariantColor,
-      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: _appbarColorDark,
+          selectedItemColor: _bottomNavigationBarIconColorSelected,
+          unselectedItemColor: _bottomNavigationBarIconColorUnselected),
+      colorScheme: ColorScheme.light(
+          primary: _darkPrimaryColor,
+          onPrimary: _darkOnPrimaryColor,
+          secondary: _darkSecondaryColor,
+          onSecondary: _darkOnSecondaryColor),
       textTheme: _darkTextTheme);
 }
