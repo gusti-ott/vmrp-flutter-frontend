@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:multimodal_routeplanner/03_domain/entities/Costs/ExternalCosts.dart';
 import 'package:multimodal_routeplanner/03_domain/entities/Costs/InternalCosts.dart';
 
@@ -8,7 +6,4 @@ class Costs {
   final InternalCosts internalCosts;
 
   Costs({required this.externalCosts, required this.internalCosts});
-
-  getAllCosts() =>
-      (internalCosts.internalCosts + externalCosts.getAllExternalCosts());
 }

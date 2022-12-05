@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/route_planner_page.dart';
+import 'package:multimodal_routeplanner/02_application/bloc/cost_details_bloc.dart';
+import 'package:multimodal_routeplanner/02_application/bloc/diagram_type_bloc.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/route_planner_bloc.dart';
 //import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
-//some change
-
-import 'package:multimodal_routeplanner/functions.dart';
-
+import '02_application/bloc/visualization_bloc.dart';
 import 'theme.dart';
 
 void main() {
@@ -35,8 +34,20 @@ class _MyAppState extends State<MyApp> {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
-        home: BlocProvider(
+        debugShowCheckedModeBanner: false,
+        home: MultiBlocProvider(providers: [
+          BlocProvider(
             create: (BuildContext context) => RoutePlannerBloc(),
-            child: const RoutePlannerPage()));
+          ),
+          BlocProvider(
+            create: (BuildContext context) => VisualizationBloc(),
+          ),
+          BlocProvider(
+            create: (BuildContext context) => CostDetailsBloc(),
+          ),
+          BlocProvider(
+            create: (BuildContext context) => DiagramTypeBloc(),
+          )
+        ], child: const RoutePlannerPage()));
   }
 }

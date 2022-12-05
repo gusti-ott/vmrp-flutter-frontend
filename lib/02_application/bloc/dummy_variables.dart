@@ -1,4 +1,4 @@
-import 'dart:html';
+/* import 'dart:html';
 
 import 'package:latlong2/latlong.dart';
 import 'package:multimodal_routeplanner/03_domain/entities/Costs/Costs.dart';
@@ -30,12 +30,12 @@ class DummyVariables {
       space: 0.7);
   final InternalCosts internalCosts1 = InternalCosts(internalCosts: 2.3);
 
-  getCosts() {
+  _getCosts() {
     return Costs(externalCosts: externalCosts1, internalCosts: internalCosts1);
   }
 
-  getTrip() {
-    Costs costs = getCosts();
+  getTrip({required String startInput, required String endInput}) {
+    Costs costs = _getCosts();
     Segment segment1 = Segment(
         distance: 5.0,
         duration: 27.3,
@@ -59,7 +59,8 @@ class DummyVariables {
         climate: externalCosts1.climate * 2,
         upstream: externalCosts1.upstream * 2,
         accidents: externalCosts1.accidents * 2,
-        space: externalCosts1.space * 2);
+        space: externalCosts1.space * 2,
+        all: );
 
     InternalCosts tripInternalCosts =
         InternalCosts(internalCosts: internalCosts1.internalCosts * 2);
@@ -67,12 +68,12 @@ class DummyVariables {
     Costs tripCosts = Costs(
         externalCosts: tripExternalCosts, internalCosts: tripInternalCosts);
 
-    Trip trip1 = Trip(
-        segments: [segment1, segment2],
-        distance: tripDistance,
-        duration: tripDuration,
-        costs: tripCosts);
+    /* Trip trip1 =
+        Trip(distance: tripDistance, duration: tripDuration, costs: tripCosts); */
 
-    return (trip1);
+    Trip trip1 =
+        Trip(distance: tripDistance, duration: tripDuration, costs: 0.4356);
+    return trip1;
   }
 }
+ */

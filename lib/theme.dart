@@ -10,11 +10,15 @@ class AppTheme {
   static final Color _lightSecondaryColor = Color(0xFFF9C784);
   //static final Color _lightSecondaryColor = Color(0xFFFC7A1E);
   static final Color _lightOnSecondaryColor = Color.fromARGB(255, 17, 17, 17);
-  static const Color _lightTextColorSecondary = Color.fromARGB(255, 10, 10, 10);
+  static const Color _lightTextColorSecondary = Color.fromARGB(255, 17, 17, 17);
+
+  static final Color _lightTertiaryColor = Color(0xFFA5D6A7);
+  static final Color _lightOnTertiaryColor = Color(0x000000);
+  static const Color _lightTextColorTertiary = Color(0x000000);
 
   static final Color _darkPrimaryColor = Color(0xFF485696);
   static final Color _darkOnPrimaryColor = Color(0xFFFE7E7E7);
-  static const Color _darkTextColorPrimary = Color(0xFFFE7E7E7);
+  static const Color _darkTextColorPrimary = Color.fromARGB(255, 206, 246, 181);
 
   static final Color _darkSecondaryColor = Color(0xFFF9C784);
   //static final Color _lightSecondaryColor = Color(0xFFFC7A1E);
@@ -81,7 +85,9 @@ class AppTheme {
           primary: _lightPrimaryColor,
           onPrimary: _lightOnPrimaryColor,
           secondary: _lightSecondaryColor,
-          onSecondary: _lightOnSecondaryColor),
+          onSecondary: _lightOnSecondaryColor,
+          tertiary: _lightTertiaryColor,
+          onTertiary: _lightOnTertiaryColor),
       textTheme: _lightTextTheme);
 
   static final ThemeData darkTheme = ThemeData(
@@ -100,4 +106,20 @@ class AppTheme {
           secondary: _darkSecondaryColor,
           onSecondary: _darkOnSecondaryColor),
       textTheme: _darkTextTheme);
+
+  // mode colors for visualization
+  static const Color bikeColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color carColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color mopedolor = Color.fromARGB(255, 5, 54, 7);
+
+  static const Color emmyColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color tierColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color flinksterColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color cabColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color sharenowColor = Color.fromARGB(255, 5, 54, 7);
+
+  static const Color metroColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color tramColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color busColor = Color.fromARGB(255, 5, 54, 7);
+  static const Color trainColor = Color.fromARGB(255, 5, 54, 7);
 }

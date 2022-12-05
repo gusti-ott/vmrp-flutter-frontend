@@ -1,5 +1,5 @@
 class InternalCosts {
-  final double internalCosts;
+  final double all;
 
-  InternalCosts({required this.internalCosts});
+  InternalCosts({required this.all});
 }

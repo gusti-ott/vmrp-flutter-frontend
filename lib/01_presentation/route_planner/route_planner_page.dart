@@ -1,142 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart';
-import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/result_list/ResultListError.dart';
-import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/result_list/ResultListInitial.dart';
-import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/result_list/ResultListWaiting.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/legend/Legend.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/map/MapWidget.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/mode_input/RouteButton.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/ResultListSuccessfull.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/ResultListError.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/ResultListInitial.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/ResultListWaiting.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/route_planner_bloc.dart';
-import 'package:multimodal_routeplanner/functions.dart';
+import 'package:multimodal_routeplanner/02_application/bloc/visualization_bloc.dart';
+import '../../03_domain/entities/MobilityMode.dart';
+import '../../03_domain/entities/Trip.dart';
+import '../../03_domain/enums/MobilityModeEnum.dart';
+import '../helpers/StrigMapingHelper.dart';
+import 'widgets/search_page/mode_input/SelectionIconButton.dart';
+import 'widgets/search_page/result_list/ResultListSuccessfull.dart';
 
-class RoutePlannerPage extends StatefulWidget {
-  const RoutePlannerPage({Key? key}) : super(key: key);
-
-  @override
-  State<RoutePlannerPage> createState() => _RoutePlannerPageState();
-}
-
-class _RoutePlannerPageState extends State<RoutePlannerPage> {
-  var pointsRoute = <LatLng>[];
-  var data;
-
-  String startAddress = "";
-  String endAddress = "";
-
-  /* String startLat = "48.1663835";
-  String startLon = "11.5752574";
-  String endLat = "48.1336151";
-  String endLon = "11.5938114";
-  String mode = "EMMY"; */
-
-  String mode = "";
-
-  var url;
-  var output = "";
-  //String output = 'Initial Output';
-
-  bool _visible = true;
-
-  bool _carState = false;
-  bool _ecarState = false;
-  bool _bikeState = false;
-  bool _ebikeState = false;
-  bool _mopedState = false;
-  bool _emopedState = false;
-  bool _ptState = false;
-  bool _cabState = false;
-  bool _tierState = false;
-  bool _emmyState = false;
-  bool _flinksterState = false;
-  bool _drivenowState = false;
-  bool _intermodalBikeState = false;
-  bool _intermodalCabState = false;
-
-  //results
-  double _distance = 0.0;
-  double _duration = 0.0;
-  double _externalCosts = 0.0;
-
-  List resultsList = [];
+class RoutePlannerPage extends StatelessWidget {
+  const RoutePlannerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
 
+    Iterable<LatLng> pointsRoute = [];
+
+    String startAddress = "Arcisstraße 21, München";
+    String endAddress = "Schleißheimerstr. 318, München";
+
+    String mode = "";
+
+    StringMappingHelper stringMappingHelper = StringMappingHelper();
+
+    Map<String, Trip> trips = {};
+
+    void updateTrips() async {
+      if (trips[mode] != null) {
+        BlocProvider.of<RoutePlannerBloc>(context)
+            .add(DeleteRouteEvent(mode, trips));
+      } else {
+        BlocProvider.of<RoutePlannerBloc>(context).add(
+          RouteRequestedEvent(
+              startAddress,
+              endAddress,
+              MobilityMode(mode: stringMappingHelper.mapModeStringToMode(mode)),
+              trips),
+        );
+      }
+    }
+
     return Scaffold(
       body: Stack(
         children: [
-          FlutterMap(
-            options: MapOptions(
-              plugins: [
-                TappablePolylineMapPlugin(),
-              ],
-              center: LatLng(48.1662627, 11.5768211),
-              zoom: 13.0,
-            ),
-            layers: [
-              TileLayerOptions(
-                  urlTemplate:
-                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c']),
-              /* MarkerLayerOptions(
-                  markers: [
-                    Marker(
-                      width: 25.0,
-                      height: 25.0,
-                      point: LatLng(48.1662627, 11.5768211),
-                      builder: (ctx) => const FlutterLogo(),
-                    ),
-                  ],
-                ), */
-              TappablePolylineLayerOptions(
-                  polylineCulling: true,
-                  polylines: [
-                    TaggedPolyline(
-                        points: pointsRoute,
-                        tag: "My Poliline",
-                        strokeWidth: 5),
-                  ],
-                  onTap: (polylines, tapPosition) => print('Tapped: ' +
-                      polylines.map((polyline) => polyline.tag).join(',') +
-                      ' at ' +
-                      tapPosition.globalPosition.toString()),
-                  onMiss: (tapPosition) {
-                    print('No polyline was tapped at position ' +
-                        tapPosition.globalPosition.toString());
-                  }),
-            ],
-          ),
+          const MapWidget(),
           SingleChildScrollView(
             child: Container(
-              width: 300,
+              width: 350,
               color: themeData.colorScheme.primary.withOpacity(0.7),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                    child: TextField(
+                    child: TextFormField(
                       onChanged: ((value) {
-                        setState(() {
-                          startAddress = value.toString();
-                        });
+                        startAddress = value.toString();
                       }),
                       decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Startadresse",
-                          fillColor: Colors.white,
-                          filled: true),
+                        border: OutlineInputBorder(),
+                        hintText: "Startadresse",
+                        fillColor: Colors.white,
+                        filled: true,
+                      ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                    child: TextField(
+                    child: TextFormField(
                       onChanged: ((value) {
-                        setState(() {
-                          endAddress = value.toString();
-                        });
+                        endAddress = value.toString();
                       }),
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -145,815 +88,262 @@ class _RoutePlannerPageState extends State<RoutePlannerPage> {
                           filled: true),
                     ),
                   ),
+                  RouteButtonWidget(
+                    startAddress: startAddress,
+                    endAddress: endAddress,
+                    updateTrips: () async {
+                      Map<String, Trip> emptyTrips = {};
+                      BlocProvider.of<RoutePlannerBloc>(context).add(
+                        RouteRequestedEvent(
+                            startAddress,
+                            endAddress,
+                            MobilityMode(mode: MobilityModeEnum.mvg),
+                            emptyTrips),
+                      );
+                    },
+                  ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                    child: Row(children: const [
+                    child: Row(children: [
                       Expanded(
-                          child: Divider(thickness: 3, color: Colors.black)),
+                          child: Divider(
+                              thickness: 3,
+                              color: themeData.colorScheme.onPrimary)),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Text("private Fahrzeuge"),
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: Text("individuelle Wege",
+                            style: themeData.textTheme.headline1),
                       ),
                       Expanded(
-                          child: Divider(thickness: 3, color: Colors.black)),
+                          child: Divider(
+                              thickness: 3,
+                              color: themeData.colorScheme.onPrimary)),
+                    ]),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'WALK';
+                            updateTrips();
+                          },
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'WALK'),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'CAR';
+                            updateTrips();
+                          },
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'CAR'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'BICYCLE';
+                            updateTrips();
+                          },
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'BICYCLE'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'MOPED';
+                            updateTrips();
+                          },
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'MOPED')
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'ECAR';
+                            updateTrips();
+                          },
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'ECAR'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'EBICYCLE';
+                            updateTrips();
+                          },
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'EBICYCLE'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'EMOPED';
+                            updateTrips();
+                          },
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'EMOPED'),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                    child: Row(children: [
+                      Expanded(
+                          child: Divider(
+                              thickness: 3,
+                              color: themeData.colorScheme.onPrimary)),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: Text("Wege mit Sharing",
+                            style: themeData.textTheme.headline1),
+                      ),
+                      Expanded(
+                          child: Divider(
+                              thickness: 3,
+                              color: themeData.colorScheme.onPrimary)),
                     ]),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _carState = !_carState;
-                            });
-                            String mode = 'CAR';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'CAB';
+                            updateTrips();
                           },
-                          icon: const Icon(
-                            Icons.directions_car_filled,
-                          ),
-                          tooltip: 'Pkw',
-                          color: _carState ? Colors.black : Colors.white),
-                      IconButton(
-                          hoverColor: Colors.white,
-                          splashColor: Colors.blue,
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _bikeState = !_bikeState;
-                            });
-                            String mode = 'BIKE';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'CAB'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'EMMY';
+                            updateTrips();
                           },
-                          icon: const Icon(
-                            Icons.directions_bike,
-                          ),
-                          tooltip: 'Fahrrad',
-                          color: _bikeState ? Colors.black : Colors.white),
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _mopedState = !_mopedState;
-                            });
-                            String mode = 'MOPED';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'EMMY'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'TIER';
+                            updateTrips();
                           },
-                          icon: const Icon(
-                            Icons.moped,
-                          ),
-                          tooltip: 'Moped',
-                          color: _mopedState ? Colors.black : Colors.white),
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _ptState = !_ptState;
-                            });
-                            String mode = 'MVG';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'TIER'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'FLINKSTER';
+                            updateTrips();
                           },
-                          icon: const Icon(
-                            Icons.directions_bus,
-                          ),
-                          tooltip: 'Öffis',
-                          color: _ptState ? Colors.black : Colors.white),
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'FLINKSTER'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'SHARENOW';
+                            updateTrips();
+                          },
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'SHARENOW'),
                     ],
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                    child: Row(children: const [
+                    child: Row(children: [
                       Expanded(
-                          child: Divider(thickness: 3, color: Colors.black)),
+                          child: Divider(
+                              thickness: 3,
+                              color: themeData.colorScheme.onPrimary)),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Text("sharing Fahrzeuge"),
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: Text("Wege mit ÖPNV",
+                            style: themeData.textTheme.headline1),
                       ),
                       Expanded(
-                          child: Divider(thickness: 3, color: Colors.black)),
+                          child: Divider(
+                              thickness: 3,
+                              color: themeData.colorScheme.onPrimary)),
                     ]),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _cabState = !_cabState;
-                            });
-                            String mode = 'CAB';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'PT';
+                            updateTrips();
                           },
-                          icon: const Icon(
-                            Icons.directions_bike_sharp,
-                          ),
-                          tooltip: 'Call a Bike',
-                          color: _cabState ? Colors.black : Colors.white),
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _emmyState = !_emmyState;
-                            });
-                            String mode = 'EMMY';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'PT'),
+                      SelectionIconButton(
+                          updateTrips: () {
+                            mode = 'INTERMODAL_PT_BIKE';
+                            updateTrips();
                           },
-                          icon: const Icon(
-                            Icons.pedal_bike_sharp,
-                          ),
-                          tooltip: 'Emmy',
-                          color: _emmyState ? Colors.black : Colors.white),
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _tierState = !_tierState;
-                            });
-                            String mode = 'TIER';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.electric_scooter,
-                          ),
-                          tooltip: 'Tier',
-                          color: _tierState ? Colors.black : Colors.white),
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _flinksterState = !_flinksterState;
-                            });
-                            String mode = 'FLINKSTER';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.car_rental,
-                          ),
-                          tooltip: 'Flinkster',
-                          color: _flinksterState ? Colors.black : Colors.white),
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _drivenowState = !_drivenowState;
-                            });
-                            String mode = 'SHARENOW';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
-
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.car_rental,
-                          ),
-                          tooltip: 'ShareNow',
-                          color: _drivenowState ? Colors.black : Colors.white),
+                          trips: trips,
+                          startAddress: startAddress,
+                          endAddress: endAddress,
+                          mode: 'INTERMODAL_PT_BIKE'),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                    child: Row(children: const [
-                      Expanded(
-                          child: Divider(thickness: 3, color: Colors.black)),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Text("intermodal"),
-                      ),
-                      Expanded(
-                          child: Divider(thickness: 3, color: Colors.black)),
-                    ]),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _intermodalBikeState = !_intermodalBikeState;
-                            });
-                            String mode = 'INTERMODAL_BIKE';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
+                  BlocBuilder<RoutePlannerBloc, RoutePlannerState>(
+                    builder: (context, routePlannerState) {
+                      if (routePlannerState is RoutePlannerInitial) {
+                        return const ResultListInitial();
+                      } else if (routePlannerState
+                          is RoutePlannerStateLoading) {
+                        return const ResultListWaiting();
+                      } else if (routePlannerState is RoutePlannerStateLoaded) {
+                        trips = routePlannerState.trips;
 
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.directions_bike,
-                          ),
-                          tooltip: 'Intermodal mit Fahrrad',
-                          color: _intermodalBikeState
-                              ? Colors.black
-                              : Colors.white),
-                      IconButton(
-                          onPressed: () async {
-                            setState(() {
-                              _visible = false;
-                              resetAllStates();
-                              _intermodalCabState = !_intermodalCabState;
-                            });
-                            String mode = 'INTERMODAL_CAB';
-                            var decodedData = await onIconPress(
-                                startAddress, endAddress, mode);
-                            List<LatLng> points = getPoints(decodedData);
-                            _updateRouteVisual(points);
+                        // print("trips updated" + trips.toString());
 
-                            setState(() {
-                              _distance = getDistance(decodedData);
-                              _duration = getDuration(decodedData);
-                              _externalCosts = getExternalCosts(decodedData);
-                              _visible = true;
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.directions_bike,
-                          ),
-                          tooltip: 'Intermodal Call a Bike',
-                          color: _intermodalCabState
-                              ? Colors.black
-                              : Colors.white),
-                    ],
-                  ),
-                  AnimatedOpacity(
-                    opacity: _visible ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 500),
-                    child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: BlocBuilder<RoutePlannerBloc, RoutePlannerState>(
-                          bloc: BlocProvider.of<RoutePlannerBloc>(context),
-                          builder: (context, routePlannerState) {
-                            if (routePlannerState is RoutePlannerInitial) {
-                              return const ResultListInitial();
-                            } else if (routePlannerState
-                                is RoutePlannerStateLoading) {
-                              return const ResultListWaiting();
-                            } else if (routePlannerState
-                                is RoutePlannerStateLoaded) {
-                              return Column(
-                                children: [
-                                  RichText(
-                                    textAlign: TextAlign.left,
-                                    text: TextSpan(
-                                      text: 'Distanz: ',
-                                      style: DefaultTextStyle.of(context).style,
-                                      children: [
-                                        TextSpan(
-                                          text: routePlannerState.trip.distance
-                                              .toStringAsFixed(2),
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        TextSpan(
-                                            text: " km",
-                                            style: DefaultTextStyle.of(context)
-                                                .style),
-                                      ],
-                                    ),
-                                  ),
-                                  RichText(
-                                    textAlign: TextAlign.left,
-                                    text: TextSpan(
-                                      text: 'Reisezeit: ',
-                                      style: DefaultTextStyle.of(context).style,
-                                      children: [
-                                        TextSpan(
-                                          text: routePlannerState.trip.duration
-                                              .toStringAsFixed(2),
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        TextSpan(
-                                            text: " Minuten",
-                                            style: DefaultTextStyle.of(context)
-                                                .style),
-                                      ],
-                                    ),
-                                  ),
-                                  RichText(
-                                    textAlign: TextAlign.left,
-                                    text: TextSpan(
-                                      text: 'Externe Kosten: ',
-                                      style: DefaultTextStyle.of(context).style,
-                                      children: [
-                                        TextSpan(
-                                          text: routePlannerState.trip.costs
-                                              .getAllCosts()
-                                              .toStringAsFixed(2),
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        TextSpan(
-                                            text: " €",
-                                            style: DefaultTextStyle.of(context)
-                                                .style),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            } else if (routePlannerState
-                                is RoutePlannerStateError) {
-                              return const ResultListError();
-                            }
-                            return const Placeholder();
-                          },
-                        )
+                        List<Trip> listTrips = trips.values.toList();
 
-                        //Column of results
-                        /* Column(
-                          children: [
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Distanz: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _distance.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " km",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Reisezeit: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _duration.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " Minuten",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Externe Kosten: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _externalCosts.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " €",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ), */
-                        ),
+                        if (listTrips.isNotEmpty) {
+                          BlocProvider.of<VisualizationBloc>(context).add(
+                              ChangeRouteVizualizationEvent(
+                                  selectedTrip: listTrips[0],
+                                  trips: listTrips));
+                        }
+
+                        return ResultList(trips: listTrips);
+                        //ResultListItem(trip: routePlannerState.trip);
+                      } else if (routePlannerState is RoutePlannerStateError) {
+                        return ResultListError(
+                            message: routePlannerState.message);
+                      }
+                      return const Placeholder();
+                    },
                   ),
-                  /* AnimatedOpacity(
-                      opacity: _visible ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 500),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Distanz: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _distance.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " km",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Reisezeit: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _duration.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " Minuten",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Externe Kosten: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _externalCosts.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " €",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    AnimatedOpacity(
-                      opacity: _visible ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 500),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Distanz: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _distance.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " km",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Reisezeit: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _duration.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " Minuten",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Externe Kosten: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _externalCosts.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " €",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    AnimatedOpacity(
-                      opacity: _visible ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 500),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Distanz: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _distance.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " km",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Reisezeit: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _duration.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " Minuten",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Externe Kosten: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _externalCosts.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " €",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    AnimatedOpacity(
-                      opacity: _visible ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 500),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Distanz: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _distance.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " km",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Reisezeit: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _duration.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " Minuten",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                text: 'Externe Kosten: ',
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                    text: _externalCosts.toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                      text: " €",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ), */
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MaterialButton(
-                      onPressed: () {
-                        BlocProvider.of<RoutePlannerBloc>(context)
-                            .add(RouteRequestedEvent());
-                      },
-                      child: Text("press this"),
-                      color: themeData.colorScheme.secondary,
-                    ),
-                  )
                 ],
               ),
             ),
           ),
+          const Align(alignment: AlignmentDirectional.topEnd, child: Legend()),
         ],
       ),
     );
   }
-
-  void _updateRouteVisual(List<LatLng> points) {
-    setState(() {
-      pointsRoute = points;
-    });
-  }
-
-  carPressed() {
-    print("Car pressed");
-  }
-
-  void resetAllStates() {
-    setState(() {
-      _carState = false;
-      _bikeState = false;
-      _mopedState = false;
-      _ptState = false;
-      _cabState = false;
-      _tierState = false;
-      _emmyState = false;
-      _flinksterState = false;
-      _drivenowState = false;
-      _intermodalBikeState = false;
-      _intermodalCabState = false;
-    });
-  }
-}
-
-_fetchdata(String url) async {
-  var headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Referrer-Policy": "no-referrer-when-downgrade"
-  };
-
-  http.Response response = await http.get(Uri.parse(url), headers: headers);
-  return response.body;
-}
-
-_getResult(selectedMode) {
-  //- fetch data
-  //- get waypoints, distance, duration, externalCosts
-  //- save results in key value pairs
-  //- return result
-}
-
-_getAllResults(List availableModes) {
-  //- fetch data
-  //- for loop over selected Modes
-  //- get waypoints, distance, duration, externalCosts
-  //- save results in List of key value pairs
 }

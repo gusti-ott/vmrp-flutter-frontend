@@ -1,30 +1,71 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:multimodal_routeplanner/02_application/bloc/dummy_variables.dart';
+import 'package:multimodal_routeplanner/03_domain/entities/MobilityMode.dart';
+import 'package:multimodal_routeplanner/03_domain/usecases/route_usecases.dart';
 
 import '../../03_domain/entities/Trip.dart';
+import '../../03_domain/failure/failures.dart';
 
 part 'route_planner_event.dart';
 part 'route_planner_state.dart';
 
 class RoutePlannerBloc extends Bloc<RoutePlannerEvent, RoutePlannerState> {
-  DummyVariables dummy = DummyVariables();
-
   RoutePlannerBloc() : super(RoutePlannerInitial()) {
-    Future sleep1() {
-      return Future.delayed(const Duration(seconds: 2), () => "1");
+    final usecases = RoutePlannerUsecases();
+
+    on<RoutePlannerEvent>(
+      (event, emit) async {
+        if (event is RouteRequestedEvent) {
+          emit(RoutePlannerStateLoading());
+
+          // get route result
+          final trip = await usecases.getTrip(
+              startInput: event.startInput,
+              endInput: event.endInput,
+              mode: event.mode);
+
+          final Map<String, Trip> trips =
+              usecases.getListAddedTrips(trips: event.trips, trip: trip);
+
+          /* tripOrFailure.fold(
+            (failure) => emit(
+                RoutePlannerStateError(message: _mapFailureToMessage(failure))),
+            (trip) => emit(RoutePlannerStateLoaded(trip: trip))); */
+          emit(RoutePlannerStateLoaded(trips: trips));
+        }
+
+        if (event is DeleteRouteEvent) {
+          emit(RoutePlannerStateLoading());
+
+          final Map<String, Trip> trips = usecases.getListRemovedTrips(
+              trips: event.trips, mode: event.mode);
+
+          /* tripOrFailure.fold(
+            (failure) => emit(
+                RoutePlannerStateError(message: _mapFailureToMessage(failure))),
+            (trip) => emit(RoutePlannerStateLoaded(trip: trip))); */
+          emit(RoutePlannerStateLoaded(trips: trips));
+        }
+
+        if (event is VisualizeDifferentRouteEvent) {
+          emit(
+            RouteVisualizationStateChanged(selectedTrip: event.selectedTrip),
+          );
+        }
+      },
+    );
+  }
+
+  String _mapFailureToMessage(Failure failure) {
+    switch (failure.runtimeType) {
+      case ServerFailure:
+        return "Uups, API Error";
+
+      case GeneralFailure:
+        return "Uups, etwas ist schiefgegangen";
+
+      default:
+        return "Uups, etwas ist schiefgegangen";
     }
-
-    on<RoutePlannerEvent>((event, emit) async {
-      emit(RoutePlannerStateLoading());
-
-      // do something
-      await sleep1();
-      // get route result
-
-      Trip dummyTrip = dummy.getTrip();
-
-      emit(RoutePlannerStateLoaded(trip: dummyTrip));
-    });
   }
 }
