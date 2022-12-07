@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/legend/Legend.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/map/MapWidget.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/route_info/RouteInfo.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/mode_input/RouteButton.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/ResultListSuccessfull.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/ResultListError.dart';
@@ -15,7 +15,6 @@ import '../../03_domain/entities/Trip.dart';
 import '../../03_domain/enums/MobilityModeEnum.dart';
 import '../helpers/StrigMapingHelper.dart';
 import 'widgets/search_page/mode_input/SelectionIconButton.dart';
-import 'widgets/search_page/result_list/ResultListSuccessfull.dart';
 
 class RoutePlannerPage extends StatelessWidget {
   const RoutePlannerPage({super.key});
@@ -23,8 +22,6 @@ class RoutePlannerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-
-    Iterable<LatLng> pointsRoute = [];
 
     String startAddress = "Arcisstraße 21, München";
     String endAddress = "Schleißheimerstr. 318, München";
@@ -54,6 +51,8 @@ class RoutePlannerPage extends StatelessWidget {
       body: Stack(
         children: [
           const MapWidget(),
+          // if (trips[0] != Null) => RouteInfo(trip: trips[0]),
+
           SingleChildScrollView(
             child: Container(
               width: 350,

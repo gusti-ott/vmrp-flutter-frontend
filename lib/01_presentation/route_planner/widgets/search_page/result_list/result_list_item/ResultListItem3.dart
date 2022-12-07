@@ -6,6 +6,7 @@ import 'package:multimodal_routeplanner/03_domain/entities/Trip.dart';
 
 import '../../../../../../02_application/bloc/visualization_bloc.dart';
 
+
 class ResultListItem3 extends StatelessWidget {
   final List<Trip> trips;
   final Trip trip;
@@ -104,6 +105,7 @@ class ResultListItem3 extends StatelessWidget {
                       ),
                     ),
                     Expanded(flex: 1, child: RouteIndicatorWidget(trip: trip)),
+                    //const Expanded(flex: 1, child: Icon(Icons.arrow_right))
                   ],
                 ),
               ),
