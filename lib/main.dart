@@ -6,6 +6,7 @@ import 'package:multimodal_routeplanner/02_application/bloc/diagram_type_bloc.da
 import 'package:multimodal_routeplanner/02_application/bloc/route_planner_bloc.dart';
 //import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
+import '02_application/bloc/route_info_bloc.dart';
 import '02_application/bloc/visualization_bloc.dart';
 import 'theme.dart';
 
@@ -47,6 +48,9 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
             create: (BuildContext context) => DiagramTypeBloc(),
+          ),
+          BlocProvider(
+            create: (BuildContext context) => RouteInfoBloc(),
           )
         ], child: const RoutePlannerPage()));
   }

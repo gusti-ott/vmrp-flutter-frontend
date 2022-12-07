@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multimodal_routeplanner/01_presentation/helpers/StrigMapingHelper.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/result_list_item/RouteIndicator.dart';
+import 'package:multimodal_routeplanner/02_application/bloc/route_info_bloc.dart';
 import 'package:multimodal_routeplanner/03_domain/entities/Trip.dart';
 
 import '../../../../../../02_application/bloc/visualization_bloc.dart';
-
 
 class ResultListItem3 extends StatelessWidget {
   final List<Trip> trips;
@@ -94,7 +94,7 @@ class ResultListItem3 extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                      flex: 5,
+                      flex: 4,
                       child: SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -104,8 +104,19 @@ class ResultListItem3 extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Expanded(
+                      flex: 1,
+                      child: IconButton(
+                        onPressed: () {
+                          BlocProvider.of<RouteInfoBloc>(context).add(
+                              ShowRouteInfoEvent(
+                                  trip: trip));
+                        },
+                        icon: const Icon(Icons.info, color: Colors.grey),
+                        hoverColor: Colors.transparent,
+                      ),
+                    ),
                     Expanded(flex: 1, child: RouteIndicatorWidget(trip: trip)),
-                    //const Expanded(flex: 1, child: Icon(Icons.arrow_right))
                   ],
                 ),
               ),
