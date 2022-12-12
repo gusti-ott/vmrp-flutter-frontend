@@ -348,21 +348,21 @@ class RoutePlannerPage extends StatelessWidget {
                   ),
                 ),
               ),
-              RouteInfo(
-                trip: dummyTrip,
-                visible: true,
-              )
+              // RouteInfo(
+              //   trip: dummyTrip,
+              //   visible: true,
+              // )
               //TODO: uncomment BlocBuilder when design finished
-              // BlocBuilder<RouteInfoBloc, RouteInfoState>(
-              //     builder: (context, routeInfoState) {
-              //   if (routeInfoState is RouteInfoLoadedState) {
-              //     return RouteInfo(trip: routeInfoState.trip, visible: true);
-              //   } else if (routeInfoState is RouteInfoHiddenState) {
-              //     return RouteInfo(trip: routeInfoState.trip, visible: false);
-              //   } else {
-              //     return const Visibility(visible: false, child: Placeholder());
-              //   }
-              // }),
+              BlocBuilder<RouteInfoBloc, RouteInfoState>(
+                  builder: (context, routeInfoState) {
+                if (routeInfoState is RouteInfoLoadedState) {
+                  return RouteInfo(trip: routeInfoState.trip, visible: true);
+                } else if (routeInfoState is RouteInfoHiddenState) {
+                  return RouteInfo(trip: routeInfoState.trip, visible: false);
+                } else {
+                  return const Visibility(visible: false, child: Placeholder());
+                }
+              }),
             ],
           ),
           const Align(alignment: AlignmentDirectional.topEnd, child: Legend()),

@@ -36,7 +36,7 @@ class RouteInfo extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          //Header Row
+                          //Header Row 1
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -47,14 +47,18 @@ class RouteInfo extends StatelessWidget {
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(stringMappingHelper
-                                    .mapModeStringToToolTip(trip.mode)),
+                                child: Text(
+                                    stringMappingHelper
+                                        .mapModeStringToToolTip(trip.mode),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
                               ),
                             ],
                           ),
                           const SizedBox(
                             height: 4,
                           ),
+                          // Header Row 2
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -80,8 +84,10 @@ class RouteInfo extends StatelessWidget {
                           const Divider(
                             thickness: 1,
                           ),
+                          // MobiScore information
                           ExpansionTile(
                             title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text('MobiScore '),
                                 SizedBox(
@@ -98,6 +104,7 @@ class RouteInfo extends StatelessWidget {
                             subtitle: const Text(
                               'erfahre mehr zum MobiScore',
                               style: TextStyle(fontSize: 12),
+                              textAlign: TextAlign.right,
                             ),
                             children: [
                               Column(
@@ -117,8 +124,10 @@ class RouteInfo extends StatelessWidget {
                           const Divider(
                             thickness: 1,
                           ),
+                          // Costs information
                           ExpansionTile(
                             title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text('Kosten'),
                                 Column(
@@ -134,6 +143,7 @@ class RouteInfo extends StatelessWidget {
                             subtitle: const Text(
                               'erfahre mehr zu den Kosten',
                               style: TextStyle(fontSize: 12),
+                              textAlign: TextAlign.right,
                             ),
                             children: [
                               Column(
