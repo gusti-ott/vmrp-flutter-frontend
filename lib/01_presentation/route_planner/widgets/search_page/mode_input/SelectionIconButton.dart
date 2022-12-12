@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multimodal_routeplanner/01_presentation/helpers/StrigMapingHelper.dart';
+import 'package:multimodal_routeplanner/01_presentation/helpers/ModeMapingHelper.dart';
 import '../../../../../02_application/bloc/route_planner_bloc.dart';
 import '../../../../../03_domain/entities/Trip.dart';
 

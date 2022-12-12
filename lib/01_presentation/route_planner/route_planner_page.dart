@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:multimodal_routeplanner/01_presentation/dummy_variables/Dummy.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/legend/Legend.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/map/MapWidget.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/route_info/RouteInfo.dart';
@@ -14,7 +15,7 @@ import 'package:multimodal_routeplanner/02_application/bloc/visualization_bloc.d
 import '../../03_domain/entities/MobilityMode.dart';
 import '../../03_domain/entities/Trip.dart';
 import '../../03_domain/enums/MobilityModeEnum.dart';
-import '../helpers/StrigMapingHelper.dart';
+import '../helpers/ModeMapingHelper.dart';
 import 'widgets/search_page/mode_input/SelectionIconButton.dart';
 
 class RoutePlannerPage extends StatelessWidget {
@@ -24,8 +25,12 @@ class RoutePlannerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
 
+    // TODO: remove this when online
     String startAddress = "Arcisstraße 21, München";
     String endAddress = "Schleißheimerstr. 318, München";
+
+    final dummy = Dummy();
+    Trip dummyTrip = dummy.getDummyTrip();
 
     String mode = "";
 
@@ -343,16 +348,21 @@ class RoutePlannerPage extends StatelessWidget {
                   ),
                 ),
               ),
-              BlocBuilder<RouteInfoBloc, RouteInfoState>(
-                  builder: (context, routeInfoState) {
-                if (routeInfoState is RouteInfoLoadedState) {
-                  return RouteInfo(trip: routeInfoState.trip, visible: true);
-                } else if (routeInfoState is RouteInfoHiddenState) {
-                  return RouteInfo(trip: routeInfoState.trip, visible: false);
-                } else {
-                  return const Visibility(visible: false, child: Placeholder());
-                }
-              }),
+              RouteInfo(
+                trip: dummyTrip,
+                visible: true,
+              )
+              //TODO: uncomment BlocBuilder when design finished
+              // BlocBuilder<RouteInfoBloc, RouteInfoState>(
+              //     builder: (context, routeInfoState) {
+              //   if (routeInfoState is RouteInfoLoadedState) {
+              //     return RouteInfo(trip: routeInfoState.trip, visible: true);
+              //   } else if (routeInfoState is RouteInfoHiddenState) {
+              //     return RouteInfo(trip: routeInfoState.trip, visible: false);
+              //   } else {
+              //     return const Visibility(visible: false, child: Placeholder());
+              //   }
+              // }),
             ],
           ),
           const Align(alignment: AlignmentDirectional.topEnd, child: Legend()),

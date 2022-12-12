@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:multimodal_routeplanner/01_presentation/helpers/ModeMapingHelper.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/route_info/ExternalCostsDetailRow.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/route_info_bloc.dart';
 import 'package:multimodal_routeplanner/03_domain/entities/Trip.dart';
 
@@ -13,51 +15,194 @@ class RouteInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
+    StringMappingHelper stringMappingHelper = StringMappingHelper();
 
     return Visibility(
       visible: visible,
       child: Align(
         alignment: Alignment.bottomLeft,
-        child: SizedBox(
-          width: 300,
-          height: 200,
-          child: Card(
-            color: themeData.colorScheme.onPrimary,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Stack(
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 300,
+              child: Card(
+                color: themeData.colorScheme.onPrimary,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Stack(
                     children: [
-                      Text('Distanz: ${trip.distance.toStringAsFixed(2)} km'),
-                      Text('Fahrzeit: ${trip.duration.toStringAsFixed(2)} min'),
-                      Text(
-                          'interne Kosten: ${trip.costs.internalCosts.all.toStringAsFixed(2)} €'),
-                      Text(
-                          'externe Kosten: ${trip.costs.externalCosts.all.toStringAsFixed(2)} €'),
-                      ExpansionTile(
-                        title: Text('MobiScore: ${trip.mobiScore}'),
-                        subtitle: const Text('erfahre mehr zum MobiScore'),
-                        children: const [Text('der MobiScore ist cool')],
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          //Header Row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: stringMappingHelper
+                                    .mapModeStringToIcon(trip.mode.toString()),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(stringMappingHelper
+                                    .mapModeStringToToolTip(trip.mode)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Column(
+                                  children: [
+                                    Row(children: [
+                                      const Icon(Icons.timer),
+                                      Text(
+                                          '${trip.duration.toStringAsFixed(2)} min')
+                                    ])
+                                  ],
+                                ),
+                                Column(children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.route),
+                                      Text(
+                                          '${trip.distance.toStringAsFixed(2)} km')
+                                    ],
+                                  ),
+                                ]),
+                              ]),
+                          const Divider(
+                            thickness: 1,
+                          ),
+                          ExpansionTile(
+                            title: Row(
+                              children: [
+                                const Text('MobiScore '),
+                                SizedBox(
+                                  width: 100,
+                                  height: 50,
+                                  child: Image(
+                                    image: stringMappingHelper
+                                        .mapMobiScoreStringToPath(
+                                            trip.mobiScore),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            subtitle: const Text(
+                              'erfahre mehr zum MobiScore',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            children: [
+                              Column(
+                                children: const [
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Der MobiScore ist eine Kenngröße, die die Nachhaltigkeit einer Route im urbanen Verkehr beschreibt. Diese wird aus den externen Kosten und der Routendistanz berechnet.',
+                                    textAlign: TextAlign.justify,
+                                    textWidthBasis: TextWidthBasis.parent,
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  SizedBox(height: 8),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const Divider(
+                            thickness: 1,
+                          ),
+                          ExpansionTile(
+                            title: Row(
+                              children: [
+                                const Text('Kosten'),
+                                Column(
+                                  children: [
+                                    Text(
+                                        'intern: ${trip.costs.internalCosts.all.toStringAsFixed(2)} €'),
+                                    Text(
+                                        'extern: ${trip.costs.externalCosts.all.toStringAsFixed(2)} €')
+                                  ],
+                                )
+                              ],
+                            ),
+                            subtitle: const Text(
+                              'erfahre mehr zu den Kosten',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            children: [
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(4),
+                                    child: Text(
+                                      'Bei dieser Fahrt entstehen ${trip.costs.internalCosts.all.toStringAsFixed(2)}€ interne Kosten und ${trip.costs.externalCosts.all.toStringAsFixed(2)}€ externe Kosten. Die externen Kosten setzen sich dabei folgendermaßen zusammen:',
+                                      textAlign: TextAlign.justify,
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  ExternalCostsDetailRow(
+                                      externalCostName: 'Unfallkosten',
+                                      externalCostValue:
+                                          trip.costs.externalCosts.accidents,
+                                      costIcon: Icons.emergency),
+                                  ExternalCostsDetailRow(
+                                      externalCostName: 'Klimaschäden',
+                                      externalCostValue:
+                                          trip.costs.externalCosts.climate,
+                                      costIcon: Icons.eco),
+                                  ExternalCostsDetailRow(
+                                      externalCostName: 'Luftverschmutzung',
+                                      externalCostValue:
+                                          trip.costs.externalCosts.air,
+                                      costIcon: Icons.air),
+                                  ExternalCostsDetailRow(
+                                      externalCostName: 'Lärmbelastung',
+                                      externalCostValue:
+                                          trip.costs.externalCosts.noise,
+                                      costIcon: Icons.volume_up),
+                                  ExternalCostsDetailRow(
+                                      externalCostName: 'Fächenverbrauch',
+                                      externalCostValue:
+                                          trip.costs.externalCosts.space,
+                                      costIcon: Icons.location_city),
+                                  ExternalCostsDetailRow(
+                                      externalCostName: 'Stau',
+                                      externalCostValue:
+                                          trip.costs.externalCosts.congestion,
+                                      costIcon: Icons.traffic),
+                                  ExternalCostsDetailRow(
+                                      externalCostName: 'Barriereeffekte',
+                                      externalCostValue:
+                                          trip.costs.externalCosts.barrier,
+                                      costIcon: Icons.fence),
+                                  const SizedBox(height: 8),
+                                ],
+                              )
+                            ],
+                          )
+                        ],
                       ),
+                      Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                              onPressed: () {
+                                BlocProvider.of<RouteInfoBloc>(context)
+                                    .add(HideRouteInfoEvent(trip: trip));
+                              },
+                              icon: const Icon(Icons.close))),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Align(
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                            onPressed: () {
-                              BlocProvider.of<RouteInfoBloc>(context)
-                                  .add(HideRouteInfoEvent(trip: trip));
-                            },
-                            icon: const Icon(Icons.close))),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
