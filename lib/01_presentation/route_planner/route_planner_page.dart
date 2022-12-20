@@ -93,6 +93,13 @@ class RoutePlannerPage extends StatelessWidget {
                               filled: true),
                         ),
                       ),
+                      const Text('Format für die Eingabe der Adresse beachten',
+                          style: TextStyle(fontSize: 12, color: Colors.white)),
+                      const Text('"<Straßenname> <Nr.>, München"',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
                       RouteButtonWidget(
                         startAddress: startAddress,
                         endAddress: endAddress,
