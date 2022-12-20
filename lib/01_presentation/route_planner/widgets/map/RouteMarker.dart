@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_map/flutter_map.dart';
-
 import '../../../../03_domain/entities/Trip.dart';
 import '../../../../03_domain/enums/RouteMarkerTypeEnum.dart';
-import '../../../helpers/StrigMapingHelper.dart';
+import '../../../helpers/ModeMapingHelper.dart';
 
 class RouteMarker extends StatelessWidget {
   final Trip trip;

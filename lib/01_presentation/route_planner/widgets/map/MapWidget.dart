@@ -10,7 +10,7 @@ import 'package:multimodal_routeplanner/values.dart';
 
 import '../../../../02_application/bloc/visualization_bloc.dart';
 import '../../../../03_domain/entities/Trip.dart';
-import '../../../helpers/StrigMapingHelper.dart';
+import '../../../helpers/ModeMapingHelper.dart';
 import 'StopMarker.dart';
 
 class MapWidget extends StatelessWidget {
@@ -18,8 +18,6 @@ class MapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
-    StringMappingHelper stringMappingHelper = StringMappingHelper();
     return Stack(
       children: [
         BlocBuilder<VisualizationBloc, VisualizationState>(

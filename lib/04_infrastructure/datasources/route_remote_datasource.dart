@@ -26,6 +26,8 @@ class RouteRemoteDatasourceImpl implements RouteRemoteDatasource {
 
     String modeString = mapMode(mode: mode);
 
+    // var url = "
+
     var url =
         "https://vmrp-web-app.herokuapp.com/plattform?inputStartAddress=$startInput&inputEndAddress=$endInput&tripMode=$modeString";
 

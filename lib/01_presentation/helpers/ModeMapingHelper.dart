@@ -123,6 +123,77 @@ class StringMappingHelper {
     }
   }
 
+  mapModeStringToBigIcon(String mode) {
+    switch (mode) {
+      case 'WALK':
+        return const Icon(Icons.directions_walk);
+
+      case 'CAR':
+        return const Icon(Icons.directions_car);
+
+      case 'BICYCLE':
+        return const Icon(Icons.directions_bike);
+
+      case 'MOPED':
+        return const Icon(Icons.moped);
+
+      case 'ECAR':
+        return const Icon(
+          Icons.electric_car,
+        );
+
+      case 'EBICYCLE':
+        return const Icon(
+          Icons.electric_bike,
+        );
+
+      case 'EMOPED':
+        return const Icon(
+          Icons.electric_moped,
+        );
+
+      case 'CAB':
+        return const CircleAvatar(
+          backgroundImage: AssetImage('assets/icons/icon_cab.png'),
+        );
+
+      case 'EMMY':
+        return const CircleAvatar(
+          backgroundImage: AssetImage('assets/icons/icon_emmy.png'),
+        );
+
+      case 'TIER':
+        return const CircleAvatar(
+          backgroundImage: AssetImage('assets/icons/icon_tier.jpg'),
+        );
+
+      case 'FLINKSTER':
+        return const CircleAvatar(
+          backgroundImage: AssetImage('assets/icons/icon_flinkster.png'),
+        );
+
+      case 'SHARENOW':
+        return const CircleAvatar(
+          backgroundImage: AssetImage('assets/icons/icon_sharenow.jpg'),
+        );
+
+      case 'PT':
+        return const CircleAvatar(
+          backgroundImage: AssetImage('assets/icons/icon_mvv.png'),
+        );
+
+      case 'INTERMODAL_PT_BIKE':
+        return const CircleAvatar(
+          backgroundImage: AssetImage('assets/icons/icon_mvv_plus_bike.png'),
+        );
+
+      default:
+        return const Icon(
+          Icons.electric_car,
+        );
+    }
+  }
+
   String mapModeStringToToolTip(String mode) {
     switch (mode) {
       case 'WALK':
