@@ -13,7 +13,7 @@ class RouteMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    StringMappingHelper stringMappingHelper = StringMappingHelper();
+    ModeMappingHelper stringMappingHelper = ModeMappingHelper();
     return Padding(
       padding: routeMarkerType == RouteMarkerType.fastest
           ? const EdgeInsets.fromLTRB(2, 0, 0, 72)

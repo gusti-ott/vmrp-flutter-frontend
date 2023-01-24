@@ -9,3 +9,5 @@ class ChangeRouteVizualizationEvent extends VisualizationEvent {
   ChangeRouteVizualizationEvent(
       {required this.selectedTrip, required this.trips});
 }
+
+class RemoveRouteVizualizationEvent extends VisualizationEvent {}

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/result_list_item/ResultListItem3.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/result_list_item/ResultListItem.dart';
 import '../../../../../03_domain/entities/Trip.dart';
 import '../result_diagram/ResultDiagramCard.dart';
-import 'result_list_item/ResultListItem2.dart';
 
 class ResultList extends StatelessWidget {
   final List<Trip> trips;

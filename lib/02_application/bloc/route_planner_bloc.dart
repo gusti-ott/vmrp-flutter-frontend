@@ -1,12 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:multimodal_routeplanner/03_domain/entities/MobilityMode.dart';
+import 'package:multimodal_routeplanner/03_domain/entities/Trip.dart';
 import 'package:multimodal_routeplanner/03_domain/usecases/route_usecases.dart';
 
-import '../../03_domain/entities/Trip.dart';
-import '../../03_domain/failure/failures.dart';
-
 part 'route_planner_event.dart';
+
 part 'route_planner_state.dart';
 
 class RoutePlannerBloc extends Bloc<RoutePlannerEvent, RoutePlannerState> {
@@ -19,19 +18,19 @@ class RoutePlannerBloc extends Bloc<RoutePlannerEvent, RoutePlannerState> {
           emit(RoutePlannerStateLoading());
 
           // get route result
-          final trip = await usecases.getTrip(
-              startInput: event.startInput,
-              endInput: event.endInput,
-              mode: event.mode);
+          try {
+            final trip = await usecases.getTrip(
+                startInput: event.startInput,
+                endInput: event.endInput,
+                mode: event.mode);
 
-          final Map<String, Trip> trips =
-              usecases.getListAddedTrips(trips: event.trips, trip: trip);
+            final Map<String, Trip> trips =
+                usecases.getListAddedTrips(trips: event.trips, trip: trip);
 
-          /* tripOrFailure.fold(
-            (failure) => emit(
-                RoutePlannerStateError(message: _mapFailureToMessage(failure))),
-            (trip) => emit(RoutePlannerStateLoaded(trip: trip))); */
-          emit(RoutePlannerStateLoaded(trips: trips));
+            emit(RoutePlannerStateLoaded(trips: trips));
+          } catch (e) {
+            emit(RoutePlannerStateError(message: e.toString()));
+          }
         }
 
         if (event is DeleteRouteEvent) {
@@ -54,18 +53,5 @@ class RoutePlannerBloc extends Bloc<RoutePlannerEvent, RoutePlannerState> {
         }
       },
     );
-  }
-
-  String _mapFailureToMessage(Failure failure) {
-    switch (failure.runtimeType) {
-      case ServerFailure:
-        return "Uups, API Error";
-
-      case GeneralFailure:
-        return "Uups, etwas ist schiefgegangen";
-
-      default:
-        return "Uups, etwas ist schiefgegangen";
-    }
   }
 }

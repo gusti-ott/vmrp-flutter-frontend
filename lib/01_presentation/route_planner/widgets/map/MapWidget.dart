@@ -3,14 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/map/RouteMarker.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/map/StartMarker.dart';
-import 'package:multimodal_routeplanner/03_domain/enums/RouteMarkerTypeEnum.dart';
+import 'package:multimodal_routeplanner/02_application/bloc/visualization_bloc.dart';
+import 'package:multimodal_routeplanner/03_domain/entities/Trip.dart';
 import 'package:multimodal_routeplanner/values.dart';
 
-import '../../../../02_application/bloc/visualization_bloc.dart';
-import '../../../../03_domain/entities/Trip.dart';
-import '../../../helpers/ModeMapingHelper.dart';
+
 import 'StopMarker.dart';
 
 class MapWidget extends StatelessWidget {
@@ -24,9 +22,6 @@ class MapWidget extends StatelessWidget {
           builder: (context, routePlannerState) {
             if (routePlannerState is VisualizationChangedState) {
               Trip selectedTrip = routePlannerState.selectedTrip;
-              Trip fastestTrip = routePlannerState.fastestTrip;
-              Trip lowestExternalCostsTrip =
-                  routePlannerState.lowestExternalCostsTrip;
 
               return FlutterMap(
                 options: MapOptions(
@@ -44,27 +39,6 @@ class MapWidget extends StatelessWidget {
                   TappablePolylineLayerOptions(
                       polylineCulling: true,
                       polylines: [
-                        // visualize fastest
-                        for (var i = 0; i < fastestTrip.segments.length; i++)
-                          TaggedPolyline(
-                              points:
-                                  fastestTrip.segments[i].getWaypointInLagLng(),
-                              tag: "festest",
-                              strokeWidth: 5,
-                              color: Colors.blue.shade400,
-                              isDotted: true),
-
-                        // visualize lowest external costs
-                        for (var i = 0;
-                            i < lowestExternalCostsTrip.segments.length;
-                            i++)
-                          TaggedPolyline(
-                              points: lowestExternalCostsTrip.segments[i]
-                                  .getWaypointInLagLng(),
-                              tag: "lowest external costs",
-                              strokeWidth: 5,
-                              color: Colors.green.shade400,
-                              isDotted: true),
 
                         // visualize selected
                         for (var i = 0; i < selectedTrip.segments.length; i++)
@@ -91,7 +65,7 @@ class MapWidget extends StatelessWidget {
                             .getLatLng(),
                         builder: (ctx) => const StopMarker(),
                       ),
-                      Marker(
+                      /*Marker(
                         width: 150,
                         height: 108,
                         point: fastestTrip.segments.length > 1
@@ -138,7 +112,7 @@ class MapWidget extends StatelessWidget {
                           routeMarkerType: RouteMarkerType.lowestExternalCosts,
                         ),
                         anchorPos: AnchorPos.align(AnchorAlign.left),
-                      ),
+                      ),*/
                     ],
                   ),
                 ],
@@ -157,16 +131,7 @@ class MapWidget extends StatelessWidget {
                       urlTemplate:
                           "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                       subdomains: ['a', 'b', 'c']),
-                  /* MarkerLayerOptions(
-                              markers: [
-                                Marker(
-                                  width: 25.0,
-                                  height: 25.0,
-                                  point: LatLng(48.1662627, 11.5768211),
-                                  builder: (ctx) => const FlutterLogo(),
-                                ),
-                              ],
-                            ), */
+
                 ],
               );
             }
