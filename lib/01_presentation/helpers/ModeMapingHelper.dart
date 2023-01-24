@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:multimodal_routeplanner/03_domain/entities/MobilityMode.dart';
 import '../../03_domain/enums/MobilityModeEnum.dart';
 
-class StringMappingHelper {
+class ModeMappingHelper {
   MobilityModeEnum mapModeStringToMode(String mode) {
     switch (mode) {
       case 'WALK':
@@ -49,6 +50,55 @@ class StringMappingHelper {
 
       default:
         return MobilityModeEnum.bike;
+    }
+  }
+
+  String mapModeToStringMode(MobilityMode mode){
+    switch (mode.mode) {
+      case MobilityModeEnum.walk:
+        return 'WALK';
+
+      case MobilityModeEnum.car:
+        return 'CAR';
+
+      case MobilityModeEnum.bike:
+        return 'BICYCLE';
+
+      case MobilityModeEnum.moped:
+        return 'MOPED';
+
+      case MobilityModeEnum.ecar:
+        return 'ECAR';
+
+      case MobilityModeEnum.ebike:
+        return 'EBICYCLE';
+
+      case MobilityModeEnum.emoped:
+        return 'EMOPED';
+
+      case MobilityModeEnum.cab:
+        return 'CAB';
+
+      case MobilityModeEnum.emmy:
+        return 'EMMY';
+
+      case MobilityModeEnum.tier:
+        return 'TIER';
+
+      case MobilityModeEnum.flinkster:
+        return 'FLINKSTER';
+
+      case MobilityModeEnum.sharenow:
+        return 'SHARENOW';
+
+      case MobilityModeEnum.mvg:
+        return 'PT';
+
+      case MobilityModeEnum.intermodal:
+        return 'INTERMODAL_PT_BIKE';
+
+      default:
+        return 'BICYCLE';
     }
   }
 

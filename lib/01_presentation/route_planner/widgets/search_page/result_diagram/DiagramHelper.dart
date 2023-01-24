@@ -86,7 +86,7 @@ class DiagramHelper {
       {required List<Trip> trips, required DiagramTypeEnum diagramType}) {
     List<charts.Series<DiagramData, String>> results = [];
     List<DiagramData> data = [];
-    final StringMappingHelper stringMappingHelper = StringMappingHelper();
+    final ModeMappingHelper stringMappingHelper = ModeMappingHelper();
 
     for (var i = 0; i < trips.length; i++) {
       if (diagramType == DiagramTypeEnum.externalCosts) {

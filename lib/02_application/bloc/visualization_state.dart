@@ -17,3 +17,5 @@ class VisualizationChangedState extends VisualizationState {
       required this.lowestExternalCostsTrip,
       required this.selectedTrip});
 }
+
+class VisualizationRemovedState extends VisualizationState{}

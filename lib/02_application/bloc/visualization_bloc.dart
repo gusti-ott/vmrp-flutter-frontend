@@ -22,6 +22,9 @@ class VisualizationBloc extends Bloc<VisualizationEvent, VisualizationState> {
               fastestTrip: fastestTrip,
               lowestExternalCostsTrip: lowestExternalCostsTrip));
         }
+        if (event is RemoveRouteVizualizationEvent){
+          emit(VisualizationRemovedState());
+        }
       },
     );
   }

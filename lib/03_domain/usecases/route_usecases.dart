@@ -41,6 +41,7 @@ class RoutePlannerUsecases {
 
   Map<String, Trip> getListRemovedTrips(
       {required Map<String, Trip> trips, required String mode}) {
+
     trips.remove(mode);
 
     List<Trip> sortedTrips = [];

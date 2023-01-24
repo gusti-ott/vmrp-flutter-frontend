@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 
-class AdvancedRouteButtonWidget extends StatelessWidget {
+class ResetRouteButton extends StatelessWidget {
+  final Function resetTrips;
 
-  final Function() loadFirstTrip;
-
-  const AdvancedRouteButtonWidget(
-      {super.key,
-      required this.loadFirstTrip,
-      });
+  const ResetRouteButton({super.key, required this.resetTrips});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +15,11 @@ class AdvancedRouteButtonWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: InkWell(
-            onTap: () => loadFirstTrip(),
+            onTap: () {
+              resetTrips();
+            },
             child: Container(
-              width: 120,
+              width: 200,
               height: 40,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -31,7 +29,7 @@ class AdvancedRouteButtonWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      'neue Route',
+                      'neue Routenplanung starten',
                       style: themeData.textTheme.bodySmall,
                     ),
                     const Icon(Icons.directions),
