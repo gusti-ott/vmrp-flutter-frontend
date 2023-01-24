@@ -61,13 +61,16 @@ class ResultListItem3 extends StatelessWidget {
                             text: TextSpan(
                               text: trip.duration.toStringAsFixed(2),
                               style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
                               children: const [
                                 TextSpan(
                                   text: " Min",
                                   style: TextStyle(
                                       fontSize: 14,
-                                      fontWeight: FontWeight.normal),
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black),
                                 )
                               ],
                             ),
@@ -79,13 +82,13 @@ class ResultListItem3 extends StatelessWidget {
                                       trip.costs.internalCosts.all)
                                   .toStringAsFixed(2),
                               style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                  fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                               children: const [
                                 TextSpan(
                                   text: " €",
                                   style: TextStyle(
                                       fontSize: 14,
-                                      fontWeight: FontWeight.normal),
+                                      fontWeight: FontWeight.normal, color: Colors.black),
                                 )
                               ],
                             ),
@@ -108,9 +111,8 @@ class ResultListItem3 extends StatelessWidget {
                       flex: 1,
                       child: IconButton(
                         onPressed: () {
-                          BlocProvider.of<RouteInfoBloc>(context).add(
-                              ShowRouteInfoEvent(
-                                  trip: trip));
+                          BlocProvider.of<RouteInfoBloc>(context)
+                              .add(ShowRouteInfoEvent(trip: trip));
                         },
                         icon: const Icon(Icons.info, color: Colors.grey),
                         hoverColor: Colors.transparent,
