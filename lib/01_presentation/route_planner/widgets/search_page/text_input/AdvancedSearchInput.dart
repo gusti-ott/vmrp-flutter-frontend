@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/mode_input/RouteButton.dart';
+import 'package:multimodal_routeplanner/02_application/bloc/address_picker/address_picker_bloc.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/route_planner/advanced_route_planner_bloc.dart';
 import 'package:multimodal_routeplanner/03_domain/entities/MobilityMode.dart';
 import 'package:multimodal_routeplanner/03_domain/enums/MobilityModeEnum.dart';
@@ -7,8 +9,7 @@ import 'package:multimodal_routeplanner/03_domain/enums/MobilityModeEnum.dart';
 class AdvancedSearchInput extends StatelessWidget {
   final AdvancedRoutePlannerBloc routeBlocProvider;
 
-  const AdvancedSearchInput({Key? key, required this.routeBlocProvider})
-      : super(key: key);
+  const AdvancedSearchInput({Key? key, required this.routeBlocProvider}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,7 @@ class AdvancedSearchInput extends StatelessWidget {
         child: TextFormField(
           onChanged: ((value) {
             startAddress = value.toString();
+            BlocProvider.of<AddressPickerBloc>(context).add(AddressInputChanged(startAddress));
           }),
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
@@ -46,8 +48,8 @@ class AdvancedSearchInput extends StatelessWidget {
       ),
       AdvancedRouteButtonWidget(
         loadFirstTrip: () {
-          routeBlocProvider.add(RouteFirstTripEvent(startAddress, endAddress,
-              MobilityMode(mode: MobilityModeEnum.mvg)));
+          routeBlocProvider
+              .add(RouteFirstTripEvent(startAddress, endAddress, MobilityMode(mode: MobilityModeEnum.mvg)));
         },
       ),
     ]);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/address_picker/AddressPicker.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/text_input/AdvancedSearchInput.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/TitleWidget.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/map/MapWidget.dart';
@@ -23,11 +24,9 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
     String startAddress = "Arcisstraße 21, München";
     String endAddress = "Schleißheimerstr. 318, München";
 
-    AdvancedRoutePlannerBloc routeBlocProvider =
-        BlocProvider.of<AdvancedRoutePlannerBloc>(context);
+    AdvancedRoutePlannerBloc routeBlocProvider = BlocProvider.of<AdvancedRoutePlannerBloc>(context);
     RouteInfoBloc routeInfoBloc = BlocProvider.of<RouteInfoBloc>(context);
-    VisualizationBloc visualizationBloc =
-        BlocProvider.of<VisualizationBloc>(context);
+    VisualizationBloc visualizationBloc = BlocProvider.of<VisualizationBloc>(context);
 
     Map<String, Trip> selectedTrips = {};
     List<Trip> listSelectedTrips = [];
@@ -51,26 +50,21 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                   child: Column(
                     children: [
                       const TitleWidget(),
-                      BlocConsumer<AdvancedRoutePlannerBloc,
-                          AdvancedRoutePlannerState>(
+                      BlocConsumer<AdvancedRoutePlannerBloc, AdvancedRoutePlannerState>(
                         listener: (context, state) {
                           if (state is FirstTripLoaded) {
                             startAddress = state.startAddress;
                             endAddress = state.endAddress;
 
-                            routeBlocProvider.add(
-                                AddTripToListEvent(state.trip, selectedTrips));
+                            routeBlocProvider.add(AddTripToListEvent(state.trip, selectedTrips));
                           } else if (state is TripLoaded) {
                             String mode = state.trip.mode;
                             if (savedTrips[mode] == null) {
-                              Map<String, Trip> newTrip = {
-                                state.trip.mode: state.trip
-                              };
+                              Map<String, Trip> newTrip = {state.trip.mode: state.trip};
 
                               savedTrips.addAll(newTrip);
                             }
-                            routeBlocProvider.add(
-                                AddTripToListEvent(state.trip, selectedTrips));
+                            routeBlocProvider.add(AddTripToListEvent(state.trip, selectedTrips));
                           }
                         },
                         builder: (context, state) {
@@ -78,17 +72,14 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                             savedTrips.clear();
                             selectedTrips.clear();
 
-                            return AdvancedSearchInput(
-                                routeBlocProvider: routeBlocProvider);
+                            return AdvancedSearchInput(routeBlocProvider: routeBlocProvider);
                           } else if (state is LoadingFirstTrip) {
                             return Column(
                               children: [
-                                AdvancedSearchInput(
-                                    routeBlocProvider: routeBlocProvider),
+                                AdvancedSearchInput(routeBlocProvider: routeBlocProvider),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: CircularProgressIndicator(
-                                      color: themeData.colorScheme.secondary),
+                                  child: CircularProgressIndicator(color: themeData.colorScheme.secondary),
                                 )
                               ],
                             );
@@ -103,11 +94,9 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                                   resetTrips: () {
                                     routeBlocProvider.add(ResetTripsEvent());
                                     if (infoIsShown) {
-                                      routeInfoBloc.add(HideRouteInfoEvent(
-                                          trip: currentInfoTrip));
+                                      routeInfoBloc.add(HideRouteInfoEvent(trip: currentInfoTrip));
                                     }
-                                    visualizationBloc
-                                        .add(RemoveRouteVizualizationEvent());
+                                    visualizationBloc.add(RemoveRouteVizualizationEvent());
                                   },
                                 ),
                                 AdvancedModeInputField(
@@ -127,11 +116,9 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                                   resetTrips: () {
                                     routeBlocProvider.add(ResetTripsEvent());
                                     if (infoIsShown) {
-                                      routeInfoBloc.add(HideRouteInfoEvent(
-                                          trip: currentInfoTrip));
+                                      routeInfoBloc.add(HideRouteInfoEvent(trip: currentInfoTrip));
                                     }
-                                    visualizationBloc
-                                        .add(RemoveRouteVizualizationEvent());
+                                    visualizationBloc.add(RemoveRouteVizualizationEvent());
                                   },
                                 ),
                                 AdvancedModeInputField(
@@ -142,8 +129,7 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                                     selectedTrips: selectedTrips),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: CircularProgressIndicator(
-                                      color: themeData.colorScheme.secondary),
+                                  child: CircularProgressIndicator(color: themeData.colorScheme.secondary),
                                 ),
                                 ResultList(trips: listSelectedTrips),
                               ],
@@ -169,16 +155,14 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                           } else if (state is FistTripError) {
                             return Column(
                               children: [
-                                AdvancedSearchInput(
-                                    routeBlocProvider: routeBlocProvider),
+                                AdvancedSearchInput(routeBlocProvider: routeBlocProvider),
                                 const ResultListError(
                                   message: 'Fehler',
                                 )
                               ],
                             );
                           } else {
-                            return const Center(
-                                child: Text('something went wrong'));
+                            return const Center(child: Text('something went wrong'));
                           }
                         },
                       )
@@ -187,8 +171,8 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                 ),
               ),
             ),
-            BlocBuilder<RouteInfoBloc, RouteInfoState>(
-                builder: (context, routeInfoState) {
+            const AddressPickerWidget(),
+            BlocBuilder<RouteInfoBloc, RouteInfoState>(builder: (context, routeInfoState) {
               if (routeInfoState is RouteInfoLoadedState) {
                 infoIsShown = true;
                 currentInfoTrip = routeInfoState.trip;

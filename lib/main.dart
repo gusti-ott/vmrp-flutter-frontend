@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner_page.dart';
+import 'package:multimodal_routeplanner/02_application/bloc/address_picker/address_picker_bloc.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/cost_details_bloc.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/diagram_type_bloc.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/route_planner/advanced_route_planner_bloc.dart';
@@ -54,6 +55,9 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
             create: (BuildContext context) => AdvancedRoutePlannerBloc(),
+          ),
+          BlocProvider(
+            create: (BuildContext context) => AddressPickerBloc(),
           ),
         ], child: const AdvancedRoutePlannerPage()));
   }
