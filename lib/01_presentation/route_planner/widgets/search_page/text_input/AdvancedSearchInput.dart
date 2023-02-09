@@ -17,41 +17,60 @@ class AdvancedSearchInput extends StatelessWidget {
     String startAddress = "Arcisstraße 21, München";
     String endAddress = "Schleißheimerstr. 318, München";
 
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-        child: TextFormField(
-          onChanged: ((value) {
-            startAddress = value.toString();
-            BlocProvider.of<AddressPickerBloc>(context).add(AddressInputChanged(startAddress));
-          }),
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: "Startadresse in München",
-            fillColor: Colors.white,
-            filled: true,
+    TextEditingController startTextController = TextEditingController();
+    TextEditingController endTextController = TextEditingController();
+    List<TextEditingController> textEditingControllers = [startTextController, endTextController];
+
+    return BlocBuilder<AddressPickerBloc, AddressPickerState>(
+      builder: (context, state) {
+        if (state is StartAddressPicked) {
+          startAddress = state.address;
+          //TODO: this needs to be set some other way, becuase it overrides the other controller
+          textEditingControllers[0].text = startAddress;
+        } else if (state is EndAddressPicked) {
+          endAddress = state.address;
+          textEditingControllers[1].text = endAddress;
+        }
+        return Column(mainAxisSize: MainAxisSize.min, children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+            child: TextFormField(
+              controller: textEditingControllers[0],
+              onChanged: ((value) {
+                startAddress = value.toString();
+                BlocProvider.of<AddressPickerBloc>(context).add(StartAddressInputChanged(startAddress));
+              }),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Startadresse in München",
+                fillColor: Colors.white,
+                filled: true,
+              ),
+            ),
           ),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-        child: TextFormField(
-          onChanged: ((value) {
-            endAddress = value.toString();
-          }),
-          decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Zieladresse in München",
-              fillColor: Colors.white,
-              filled: true),
-        ),
-      ),
-      AdvancedRouteButtonWidget(
-        loadFirstTrip: () {
-          routeBlocProvider
-              .add(RouteFirstTripEvent(startAddress, endAddress, MobilityMode(mode: MobilityModeEnum.mvg)));
-        },
-      ),
-    ]);
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+            child: TextFormField(
+              controller: textEditingControllers[1],
+              onChanged: ((value) {
+                endAddress = value.toString();
+                BlocProvider.of<AddressPickerBloc>(context).add(EndAddressInputChanged(endAddress));
+              }),
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Zieladresse in München",
+                  fillColor: Colors.white,
+                  filled: true),
+            ),
+          ),
+          AdvancedRouteButtonWidget(
+            loadFirstTrip: () {
+              routeBlocProvider.add(
+                  RouteFirstTripEvent(startAddress, endAddress, MobilityMode(mode: MobilityModeEnum.mvg)));
+            },
+          ),
+        ]);
+      },
+    );
   }
 }

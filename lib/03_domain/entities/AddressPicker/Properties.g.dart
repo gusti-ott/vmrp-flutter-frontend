@@ -11,6 +11,8 @@ Properties _$PropertiesFromJson(Map<String, dynamic> json) => Properties(
       json['street'] as String?,
       json['housenumber'] as String?,
       json['postcode'] as String?,
+      json['city'] as String?,
+      json['country'] as String?,
     );
 
 Map<String, dynamic> _$PropertiesToJson(Properties instance) =>
@@ -19,4 +21,6 @@ Map<String, dynamic> _$PropertiesToJson(Properties instance) =>
       'street': instance.street,
       'housenumber': instance.housenumber,
       'postcode': instance.postcode,
+      'city': instance.city,
+      'country': instance.country,
     };
