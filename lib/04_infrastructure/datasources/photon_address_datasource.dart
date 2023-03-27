@@ -10,9 +10,9 @@ abstract class PhotonAddressDatasource {
 class PhotonAddressDatasourceImpl implements PhotonAddressDatasource {
   final http.Client client = http.Client();
 
-  //add coordinates of Munich, to prioritize locations in Munich (in request url)
-  final String munichLat = 47.635784.toString();
-  final String munichLon = 13.590088.toString();
+  //add coordinates of Munich, to prioritize locations in Munich (Marienplatz) (in request url)
+  final String munichLat = 48.1371695.toString();
+  final String munichLon = 11.571096.toString();
 
   @override
   Future<List<Address>> getListAddressesFromApi({required String inputAddress}) async {

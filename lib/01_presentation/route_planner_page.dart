@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/address_picker/AddressPicker.dart';
-import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/text_input/AdvancedSearchInput.dart';
-import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/TitleWidget.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/map/MapWidget.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/route_info/RouteInfo.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/TitleWidget.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/mode_input/ModeInputField.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/mode_input/ResetRouteButton.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/ResultListError.dart';
 import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/result_list/ResultListSuccessfull.dart';
+import 'package:multimodal_routeplanner/01_presentation/route_planner/widgets/search_page/text_input/AdvancedSearchInput.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/route_info_bloc.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/route_planner/advanced_route_planner_bloc.dart';
 import 'package:multimodal_routeplanner/02_application/bloc/visualization_bloc.dart';
@@ -68,19 +68,18 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                           }
                         },
                         builder: (context, state) {
-                          if (state is AdvancedRoutePlannerInitial) {
+                          if (state is AdvancedRoutePlannerInitial || state is LoadingFirstTrip) {
                             savedTrips.clear();
                             selectedTrips.clear();
 
-                            return AdvancedSearchInput(routeBlocProvider: routeBlocProvider);
-                          } else if (state is LoadingFirstTrip) {
                             return Column(
                               children: [
-                                AdvancedSearchInput(routeBlocProvider: routeBlocProvider),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: CircularProgressIndicator(color: themeData.colorScheme.secondary),
-                                )
+                                const AdvancedSearchInput(),
+                                if (state is LoadingFirstTrip)
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CircularProgressIndicator(color: themeData.colorScheme.secondary),
+                                  )
                               ],
                             );
                           } else if (state is TripAddedOrRemoved) {
@@ -154,9 +153,9 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                             );
                           } else if (state is FistTripError) {
                             return Column(
-                              children: [
-                                AdvancedSearchInput(routeBlocProvider: routeBlocProvider),
-                                const ResultListError(
+                              children: const [
+                                AdvancedSearchInput(),
+                                ResultListError(
                                   message: 'Fehler',
                                 )
                               ],
@@ -171,7 +170,6 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
                 ),
               ),
             ),
-            const AddressPickerWidget(),
             BlocBuilder<RouteInfoBloc, RouteInfoState>(builder: (context, routeInfoState) {
               if (routeInfoState is RouteInfoLoadedState) {
                 infoIsShown = true;
@@ -186,6 +184,7 @@ class AdvancedRoutePlannerPage extends StatelessWidget {
               }
             }),
           ]),
+          const Positioned(top: 200, left: 8, child: AddressPickerWidget()),
         ],
       ),
     );

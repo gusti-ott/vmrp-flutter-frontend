@@ -7,15 +7,13 @@ import 'package:multimodal_routeplanner/03_domain/entities/MobilityMode.dart';
 import 'package:multimodal_routeplanner/03_domain/enums/MobilityModeEnum.dart';
 
 class AdvancedSearchInput extends StatelessWidget {
-  final AdvancedRoutePlannerBloc routeBlocProvider;
-
-  const AdvancedSearchInput({Key? key, required this.routeBlocProvider}) : super(key: key);
+  const AdvancedSearchInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // TODO: remove this when online
-    String startAddress = "Arcisstraße 21, München";
-    String endAddress = "Schleißheimerstr. 318, München";
+    String startAddress = "";
+    String endAddress = "";
 
     TextEditingController startTextController = TextEditingController();
     TextEditingController endTextController = TextEditingController();
@@ -25,7 +23,7 @@ class AdvancedSearchInput extends StatelessWidget {
       builder: (context, state) {
         if (state is StartAddressPicked) {
           startAddress = state.address;
-          //TODO: this needs to be set some other way, becuase it overrides the other controller
+          //TODO: this needs to be set some other way, because it overrides the other controller
           textEditingControllers[0].text = startAddress;
         } else if (state is EndAddressPicked) {
           endAddress = state.address;
@@ -65,8 +63,8 @@ class AdvancedSearchInput extends StatelessWidget {
           ),
           AdvancedRouteButtonWidget(
             loadFirstTrip: () {
-              routeBlocProvider.add(
-                  RouteFirstTripEvent(startAddress, endAddress, MobilityMode(mode: MobilityModeEnum.mvg)));
+              BlocProvider.of<AdvancedRoutePlannerBloc>(context).add(
+                  RouteFirstTripEvent(startAddress, endAddress, MobilityMode(mode: MobilityModeEnum.bike)));
             },
           ),
         ]);
